@@ -1,10 +1,11 @@
-import React, { Component } from "react";
-import Chart from "chart.js";
+import React, { Component } from 'react';
+import Chart from 'chart.js';
 
 class ChartBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      chart: null,
       chartData: {}
     };
   }
@@ -12,21 +13,18 @@ class ChartBar extends Component {
   static defaultProps = {
     displayTitle: true,
     displayLegend: true,
-    position: "right",
-    location: "City"
+    position: 'right',
+    location: 'City'
   };
 
   chartRef = React.createRef();
 
   componentDidMount() {
-    
-  
+    const myChartRef = this.chartRef.current.getContext('2d');
 
-    const myChartRef = this.chartRef.current.getContext("2d");
-
-    console.log(this.state.chartData.length, "check");
-    new Chart(myChartRef, {
-      type: "bar",
+    console.log(this.state.chartData.length, 'check');
+    const chart = new Chart(myChartRef, {
+      type: 'bar',
       data: this.props.chartData,
       options: {
         legend: {
@@ -47,15 +45,23 @@ class ChartBar extends Component {
         }
       }
     });
+
+    this.setState({ chart });
     console.log(myChartRef);
-  
   }
 
-  shouldComponentUpdate(){
-    console.log(this.props.chartData, "searching for props");
-    
+  componentDidUpdate() {
+    const { labels, datasets } = this.props.chartData;
+    const { chart } = this.state;
 
+    chart.data.labels = labels;
+    chart.data.datasets = datasets;
+    chart.update();
+  }
 
+  shouldComponentUpdate() {
+    console.log(this.props.chartData, 'searching for props');
+    return true;
   }
   render() {
     return (
